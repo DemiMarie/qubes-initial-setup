@@ -1,0 +1,8 @@
+host:
+  rpm:
+    build:
+    - initial-setup.spec
+source:
+  files:
+   - url: https://ftp.qubes-os.org/distfiles/initial-setup-@VERSION@.tar.gz
+     sha512: initial-setup-@VERSION@.tar.gz.sha512
