@@ -12,6 +12,9 @@ Release: @REL@%{?dist}
 # git clone https://github.com/rhinstaller/initial-setup
 Source0: %{name}-%{version}.tar.gz
 
+Patch1: 0001-Move-actual-setup-to-a-separate-task.patch
+Patch2: 0002-Add-ProgressSpoke.patch
+
 %define debug_package %{nil}
 %define anacondaver 37.8-1
 
