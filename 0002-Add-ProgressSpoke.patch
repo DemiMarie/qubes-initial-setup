@@ -1,4 +1,4 @@
-From 540f5fbf306ffba940d426eb35b73bef5426f0e7 Mon Sep 17 00:00:00 2001
+From 94fb6f7f296486a1f19d648f00e1ff63f4db840a Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?=
  <marmarek@invisiblethingslab.com>
 Date: Tue, 31 Jan 2023 16:12:39 +0100
@@ -15,13 +15,13 @@ minor differences:
 ---
  initial_setup/__init__.py                     |  14 +-
  initial_setup/gui/spokes/setup_progress.glade | 168 ++++++++++++++++
- initial_setup/gui/spokes/setup_progress.py    | 180 ++++++++++++++++++
- 3 files changed, 356 insertions(+), 6 deletions(-)
+ initial_setup/gui/spokes/setup_progress.py    | 179 ++++++++++++++++++
+ 3 files changed, 355 insertions(+), 6 deletions(-)
  create mode 100644 initial_setup/gui/spokes/setup_progress.glade
  create mode 100644 initial_setup/gui/spokes/setup_progress.py
 
 diff --git a/initial_setup/__init__.py b/initial_setup/__init__.py
-index ae46964..ddf28ef 100644
+index 61bf5bd..30fa8b9 100644
 --- a/initial_setup/__init__.py
 +++ b/initial_setup/__init__.py
 @@ -280,12 +280,14 @@ class InitialSetup(object):
@@ -43,8 +43,8 @@ index ae46964..ddf28ef 100644
 +            )
 +            task.start()
  
-         # Write the kickstart data to file
-         log.info("writing the Initial Setup kickstart file %s", OUTPUT_KICKSTART_PATH)
+         if self.external_reconfig:
+             # prevent the reconfig flag from being written out
 diff --git a/initial_setup/gui/spokes/setup_progress.glade b/initial_setup/gui/spokes/setup_progress.glade
 new file mode 100644
 index 0000000..b7547dd
@@ -221,10 +221,10 @@ index 0000000..b7547dd
 +</interface>
 diff --git a/initial_setup/gui/spokes/setup_progress.py b/initial_setup/gui/spokes/setup_progress.py
 new file mode 100644
-index 0000000..81ad0fb
+index 0000000..ef8faa9
 --- /dev/null
 +++ b/initial_setup/gui/spokes/setup_progress.py
-@@ -0,0 +1,180 @@
+@@ -0,0 +1,179 @@
 +#
 +# Copyright (C) 2011-2013  Red Hat, Inc.
 +#
@@ -241,26 +241,25 @@ index 0000000..81ad0fb
 +# source code or documentation are not subject to the GNU General Public
 +# License and may only be used or replicated with the express permission of
 +# Red Hat, Inc.
++import logging
++
 +import gi
 +gi.require_version('Gtk', '3.0')
 +from gi.repository import Gtk
 +
 +from initial_setup import InitialSetupTask
 +from initial_setup.gui.hubs import InitialSetupMainHub
-+from pyanaconda.anaconda_loggers import get_module_logger
 +from pyanaconda.core.i18n import _, C_
 +from pyanaconda.modules.common.constants.services import USERS
 +from pyanaconda.product import productName
-+from pyanaconda.flags import flags
 +from pyanaconda.core import util
 +from pyanaconda.core.configuration.anaconda import conf
 +from pyanaconda.core.constants import IPMI_FINISHED
 +from pyanaconda.ui.common import FirstbootOnlySpokeMixIn
-+from pykickstart.constants import KS_SHUTDOWN, KS_REBOOT
 +from pyanaconda.ui.gui.spokes import StandaloneSpoke
 +from pyanaconda.ui.gui.utils import gtk_call_once
 +
-+log = get_module_logger(__name__)
++log = logging.getLogger("initial-setup")
 +
 +__all__ = ["ProgressSpoke"]
 +

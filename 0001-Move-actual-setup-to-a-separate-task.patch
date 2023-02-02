@@ -1,4 +1,4 @@
-From 6e0cddf8375eac6873904d088ad363f4561fbad1 Mon Sep 17 00:00:00 2001
+From 28e98dc0d02a045f6c922df686ae849a4e43607c Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?=
  <marmarek@invisiblethingslab.com>
 Date: Tue, 31 Jan 2023 16:09:22 +0100
@@ -9,13 +9,13 @@ progress-reporting spoke.
 Besides plain code move, it uses a TaskQueue to collect tasks first, and
 then call them all.
 ---
- initial_setup/__init__.py |  89 +++--------------------
- initial_setup/task.py     | 148 ++++++++++++++++++++++++++++++++++++++
- 2 files changed, 157 insertions(+), 80 deletions(-)
+ initial_setup/__init__.py |  82 +++-------------------
+ initial_setup/task.py     | 141 ++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 150 insertions(+), 73 deletions(-)
  create mode 100644 initial_setup/task.py
 
 diff --git a/initial_setup/__init__.py b/initial_setup/__init__.py
-index f43f235..ae46964 100644
+index f43f235..61bf5bd 100644
 --- a/initial_setup/__init__.py
 +++ b/initial_setup/__init__.py
 @@ -11,16 +11,14 @@ import atexit
@@ -38,7 +38,7 @@ index f43f235..ae46964 100644
      SERVICES, NETWORK
  from pyanaconda.modules.common.structures.kickstart import KickstartReport
  
-@@ -282,81 +280,12 @@ class InitialSetup(object):
+@@ -282,74 +280,12 @@ class InitialSetup(object):
          # Do not execute sections that were part of the original
          # anaconda kickstart file (== have .seen flag set)
  
@@ -110,13 +110,6 @@ index f43f235..ae46964 100644
 -        for service_name, object_path in boss_proxy.CollectInstallSystemTasks():
 -            task_proxy = DBus.get_proxy(service_name, object_path)
 -            sync_run_task(task_proxy)
--
--        if self.external_reconfig:
--            # prevent the reconfig flag from being written out
--            # to kickstart if neither /etc/reconfigSys or /.unconfigured
--            # are present
--            services_proxy = SERVICES.get_proxy()
--            services_proxy.SetupOnBoot = SETUP_ON_BOOT_DEFAULT
 +        task = InitialSetupTask(
 +            groups_already_configured=self._groups_already_configured,
 +            users_already_configured=self._users_already_configured,
@@ -124,14 +117,14 @@ index f43f235..ae46964 100644
 +        )
 +        task.start()
  
-         # Write the kickstart data to file
-         log.info("writing the Initial Setup kickstart file %s", OUTPUT_KICKSTART_PATH)
+         if self.external_reconfig:
+             # prevent the reconfig flag from being written out
 diff --git a/initial_setup/task.py b/initial_setup/task.py
 new file mode 100644
-index 0000000..3fa616d
+index 0000000..848dd11
 --- /dev/null
 +++ b/initial_setup/task.py
-@@ -0,0 +1,148 @@
+@@ -0,0 +1,141 @@
 +import logging
 +
 +from pyanaconda.core.constants import SETUP_ON_BOOT_RECONFIG, SETUP_ON_BOOT_DEFAULT
@@ -273,13 +266,6 @@ index 0000000..3fa616d
 +
 +        # done
 +        self.report_progress(_("Complete!"), step_number=self.steps)
-+
-+        if self.external_reconfig:
-+            # prevent the reconfig flag from being written out
-+            # to kickstart if neither /etc/reconfigSys or /.unconfigured
-+            # are present
-+            services_proxy = SERVICES.get_proxy()
-+            services_proxy.SetupOnBoot = SETUP_ON_BOOT_DEFAULT
 -- 
 2.37.3
 
