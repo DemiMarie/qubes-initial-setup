@@ -1,0 +1,60 @@
+From 038eb30fe73c82e4c4c12179f847edeff85569dd Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?=
+ <marmarek@invisiblethingslab.com>
+Date: Thu, 30 Nov 2023 05:05:32 +0100
+Subject: [PATCH] Fix checking if users/groups are already configured with GUI
+ frontend
+
+Previous patch moved the check to the ProgressSpoke(), but that
+unfortunately is evaluated after user already set the configuration. So,
+ProgressSpoke() does not see the initial state anymore. To avoid
+re-configuring users, check for their existence directly.
+---
+ initial_setup/gui/spokes/setup_progress.py | 23 ++++++++++++++++++++--
+ 1 file changed, 21 insertions(+), 2 deletions(-)
+
+diff --git a/initial_setup/gui/spokes/setup_progress.py b/initial_setup/gui/spokes/setup_progress.py
+index ef8faa9..d16ba0e 100644
+--- a/initial_setup/gui/spokes/setup_progress.py
++++ b/initial_setup/gui/spokes/setup_progress.py
+@@ -16,6 +16,9 @@
+ # Red Hat, Inc.
+ import logging
+ 
++import grp
++import pwd
++
+ import gi
+ gi.require_version('Gtk', '3.0')
+ from gi.repository import Gtk
+@@ -64,9 +67,25 @@ class ProgressSpoke(FirstbootOnlySpokeMixIn, StandaloneSpoke):
+         # Record if groups, users or root password has been set before Initial Setup
+         # has been started, so that we don't trample over existing configuration.
+         log.info("collecting initial state")
++        # FIXME: this is evaluated too late to collect "initial state"
++        # because at this point users_proxy.Users/users_proxy.Groups is no
++        # longer initial state
++        # so, instead check if requested users/groups exist already
+         users_proxy = USERS.get_proxy()
+-        self._groups_already_configured = bool(users_proxy.Groups)
+-        self._users_already_configured = bool(users_proxy.Users)
++        self._groups_already_configured = False
++        for group in users_proxy.Groups:
++            try:
++                grp.getgrnam(group['name'].unpack())
++                self._groups_already_configured = True
++            except KeyError:
++                pass
++        self._users_already_configured = False
++        for user in users_proxy.Users:
++            try:
++                pwd.getpwnam(user['name'].unpack())
++                self._users_already_configured = True
++            except KeyError:
++                pass
+         self._root_password_already_configured = users_proxy.IsRootPasswordSet
+ 
+     @property
+-- 
+2.41.0
+
