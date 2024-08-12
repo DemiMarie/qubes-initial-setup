@@ -1,8 +1,8 @@
-From 94fb6f7f296486a1f19d648f00e1ff63f4db840a Mon Sep 17 00:00:00 2001
+From 0b38997bbf7ad0832d589c10573ea4f66e1d1320 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?=
  <marmarek@invisiblethingslab.com>
 Date: Tue, 31 Jan 2023 16:12:39 +0100
-Subject: [PATCH 2/2] Add ProgressSpoke
+Subject: [PATCH] Add ProgressSpoke
 
 Add a standalone spoke that reports progress of configuration tasks.
 This is heavily based on ProgressSpoke from anaconda itself, with few
@@ -21,10 +21,10 @@ minor differences:
  create mode 100644 initial_setup/gui/spokes/setup_progress.py
 
 diff --git a/initial_setup/__init__.py b/initial_setup/__init__.py
-index 61bf5bd..30fa8b9 100644
+index 2d0d1b1..76a1d78 100644
 --- a/initial_setup/__init__.py
 +++ b/initial_setup/__init__.py
-@@ -280,12 +280,14 @@ class InitialSetup(object):
+@@ -290,12 +290,14 @@ class InitialSetup(object):
          # Do not execute sections that were part of the original
          # anaconda kickstart file (== have .seen flag set)
  
@@ -221,7 +221,7 @@ index 0000000..b7547dd
 +</interface>
 diff --git a/initial_setup/gui/spokes/setup_progress.py b/initial_setup/gui/spokes/setup_progress.py
 new file mode 100644
-index 0000000..ef8faa9
+index 0000000..eec3154
 --- /dev/null
 +++ b/initial_setup/gui/spokes/setup_progress.py
 @@ -0,0 +1,179 @@
@@ -251,7 +251,7 @@ index 0000000..ef8faa9
 +from initial_setup.gui.hubs import InitialSetupMainHub
 +from pyanaconda.core.i18n import _, C_
 +from pyanaconda.modules.common.constants.services import USERS
-+from pyanaconda.product import productName
++from pyanaconda.core.product import get_product_name
 +from pyanaconda.core import util
 +from pyanaconda.core.configuration.anaconda import conf
 +from pyanaconda.core.constants import IPMI_FINISHED
@@ -355,7 +355,7 @@ index 0000000..ef8faa9
 +        continue_text = _(
 +            "%s is now successfully installed and ready for you to use!\n"
 +            "Go ahead and quit the application to start using it!"
-+        ) % productName
++        ) % get_product_name()
 +
 +        label = self.builder.get_object("rebootLabel")
 +        label.set_text(continue_text)
@@ -405,5 +405,5 @@ index 0000000..ef8faa9
 +        if self._task.steps > 0:
 +            gtk_call_once(self._progressBar.set_fraction, step/self._task.steps)
 -- 
-2.37.3
+2.45.2
 

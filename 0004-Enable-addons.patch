@@ -1,0 +1,31 @@
+From cc1884f776c4d552bedc899b45742fc6bd78c90a Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?=
+ <marmarek@invisiblethingslab.com>
+Date: Tue, 13 Aug 2024 17:39:53 +0200
+Subject: [PATCH] Enable addons
+
+The 5e3c55d "Fix Anaconda module startup" commit unintentionally(?)
+prevented all addon modules from startging. Re-add them to the
+activatable_modules list, while keeping forbidden_modules list
+unchanged.
+
+Fixes: 5e3c55d "Fix Anaconda module startup"
+---
+ data/10-initial-setup.conf | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/data/10-initial-setup.conf b/data/10-initial-setup.conf
+index 715c518..9d92a7b 100644
+--- a/data/10-initial-setup.conf
++++ b/data/10-initial-setup.conf
+@@ -11,6 +11,7 @@ activatable_modules =
+     org.fedoraproject.Anaconda.Modules.Security
+     org.fedoraproject.Anaconda.Modules.Users
+     org.fedoraproject.Anaconda.Modules.Services
++    org.fedoraproject.Anaconda.Addons.*
+ 
+ # Make sure modules that are not supported on installed
+ # system are not run.
+-- 
+2.45.2
+

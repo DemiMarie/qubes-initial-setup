@@ -1,8 +1,8 @@
-From 28e98dc0d02a045f6c922df686ae849a4e43607c Mon Sep 17 00:00:00 2001
+From dab28b437af742aad6b6eb15759a00f6b7ee708b Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?=
  <marmarek@invisiblethingslab.com>
 Date: Tue, 31 Jan 2023 16:09:22 +0100
-Subject: [PATCH 1/2] Move actual setup to a separate task
+Subject: [PATCH] Move actual setup to a separate task
 
 Move code to a separate task, so a subsequent commit can hook it up to a
 progress-reporting spoke.
@@ -15,7 +15,7 @@ then call them all.
  create mode 100644 initial_setup/task.py
 
 diff --git a/initial_setup/__init__.py b/initial_setup/__init__.py
-index f43f235..61bf5bd 100644
+index bd864d7..2d0d1b1 100644
 --- a/initial_setup/__init__.py
 +++ b/initial_setup/__init__.py
 @@ -11,16 +11,14 @@ import atexit
@@ -38,7 +38,7 @@ index f43f235..61bf5bd 100644
      SERVICES, NETWORK
  from pyanaconda.modules.common.structures.kickstart import KickstartReport
  
-@@ -282,74 +280,12 @@ class InitialSetup(object):
+@@ -292,74 +290,12 @@ class InitialSetup(object):
          # Do not execute sections that were part of the original
          # anaconda kickstart file (== have .seen flag set)
  
@@ -267,5 +267,5 @@ index 0000000..848dd11
 +        # done
 +        self.report_progress(_("Complete!"), step_number=self.steps)
 -- 
-2.37.3
+2.45.2
 

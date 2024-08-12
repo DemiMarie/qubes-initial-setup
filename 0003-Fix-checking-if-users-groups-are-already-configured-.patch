@@ -1,4 +1,4 @@
-From 038eb30fe73c82e4c4c12179f847edeff85569dd Mon Sep 17 00:00:00 2001
+From fc754d175b66ef61a69604c31d2642278e99b54e Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?=
  <marmarek@invisiblethingslab.com>
 Date: Thu, 30 Nov 2023 05:05:32 +0100
@@ -14,7 +14,7 @@ re-configuring users, check for their existence directly.
  1 file changed, 21 insertions(+), 2 deletions(-)
 
 diff --git a/initial_setup/gui/spokes/setup_progress.py b/initial_setup/gui/spokes/setup_progress.py
-index ef8faa9..d16ba0e 100644
+index eec3154..deb41f7 100644
 --- a/initial_setup/gui/spokes/setup_progress.py
 +++ b/initial_setup/gui/spokes/setup_progress.py
 @@ -16,6 +16,9 @@
@@ -56,5 +56,5 @@ index ef8faa9..d16ba0e 100644
  
      @property
 -- 
-2.41.0
+2.45.2
 
