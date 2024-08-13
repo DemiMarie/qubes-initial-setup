@@ -1,4 +1,4 @@
-host-fc37:
+host:
   rpm:
     build:
     - initial-setup.spec
