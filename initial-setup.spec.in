@@ -43,8 +43,6 @@ Requires(preun): systemd
 Requires(postun): systemd
 Requires: util-linux
 Conflicts: firstboot < 19.2
-# temporary workaround for https://github.com/QubesOS/qubes-issues/issues/9568
-Conflicts: libseat >= 0.9.0
 
 %description
 The initial-setup utility runs after installation.  It guides the user through
