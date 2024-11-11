@@ -1,0 +1,31 @@
+From c1b14bc4af9afda6a07435cfacbff9311aa7526d Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?=
+ <marmarek@invisiblethingslab.com>
+Date: Mon, 11 Nov 2024 21:17:44 +0100
+Subject: [PATCH] Switch VT before starting weston
+
+libseat >= 0.9.0 doesn't do that anymore, and it's necessary to get
+access to devices.
+---
+ scripts/run-gui-backend.guiweston | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/scripts/run-gui-backend.guiweston b/scripts/run-gui-backend.guiweston
+index 76c91c3..cd0b7fa 100755
+--- a/scripts/run-gui-backend.guiweston
++++ b/scripts/run-gui-backend.guiweston
+@@ -24,6 +24,11 @@ EOF
+ 
+ chmod +x ${RUN_SCRIPT}
+ 
++if [ -n "$XDG_VTNR" ]; then
++    # change to VT on which we run to get access to devices
++    chvt "${XDG_VTNR}"
++fi
++
+ weston --config=${CONFIG_FILE} --socket=wl-firstboot-0
+ exit_code=$(< ${EXIT_CODE_SAVE})
+ 
+-- 
+2.46.0
+
