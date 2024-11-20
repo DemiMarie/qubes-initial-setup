@@ -21,6 +21,7 @@ Patch2: 0002-Add-ProgressSpoke.patch
 Patch3: 0003-Fix-checking-if-users-groups-are-already-configured-.patch
 Patch4: 0004-Enable-addons.patch
 Patch5: 0005-Switch-VT-before-starting-weston.patch
+Patch6: 0006-Try-to-use-outputs-from-card1-and-card2-too.patch
 
 %define debug_package %{nil}
 %define anacondaver 37.8-1

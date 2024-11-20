@@ -1,0 +1,37 @@
+From ce7ab6e9756bc453948533d2e432ae23da894024 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?=
+ <marmarek@invisiblethingslab.com>
+Date: Wed, 20 Nov 2024 20:28:07 +0100
+Subject: [PATCH] Try to use outputs on all cards
+
+Normally weston uses card0 only. In dual-GPU setup, it may not be the
+one with monitor connected, and when it doesn't find any connector
+monitor, it fails to startup. Look also at outputs connected to other
+cards too. There doesn't seems to be any option to
+check all connected devices, so enumerate them via sysfs manually.
+---
+ scripts/run-gui-backend.guiweston | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/scripts/run-gui-backend.guiweston b/scripts/run-gui-backend.guiweston
+index cd0b7fa..1e266c6 100755
+--- a/scripts/run-gui-backend.guiweston
++++ b/scripts/run-gui-backend.guiweston
+@@ -29,7 +29,13 @@ if [ -n "$XDG_VTNR" ]; then
+     chvt "${XDG_VTNR}"
+ fi
+ 
+-weston --config=${CONFIG_FILE} --socket=wl-firstboot-0
++cards=$(ls -d /sys/class/drm/card*| grep -v -- -| cut -d / -f 5)
++primary_card=$(echo "$cards" | head -1 )
++secondary_cards=$(echo "$cards"|
++                  tail -n +2|
++                  xargs printf "%s,")
++
++weston --config=${CONFIG_FILE} --socket=wl-firstboot-0 --drm-device="$primary_card" --additional-devices="$secondary_cards"
+ exit_code=$(< ${EXIT_CODE_SAVE})
+ 
+ rm ${CONFIG_FILE} ${RUN_SCRIPT} ${EXIT_CODE_SAVE}
+-- 
+2.46.0
+
